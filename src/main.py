@@ -1,9 +1,38 @@
 #!/usr/bin/env python3
 
+import sys
+import json
+
+from PyQt5.QtWidgets import QApplication
+
+import ui
 import image_reader
-import maze_solver
 
-if __name__ == "__main__":
-    tensor = image_reader.dirToWalkTensor('res/map')
 
-    print(maze_solver.solveBFS(tensor, (0, 2, 2), (0, 29, 29)))
+def loadRoomsFile(filename: str):
+    rooms_file = open(filename)
+    rooms = json.load(rooms_file)
+    rooms_file.close()
+
+    for k in rooms:
+        rooms[k] = tuple(rooms[k])
+
+    return rooms
+
+
+def main():
+    app = QApplication(sys.argv)
+
+    rooms = loadRoomsFile("res/rooms.json")
+    tensor = image_reader.dirToWalkTensor("res/map")
+
+    widget = ui.App(tensor, rooms)
+    widget.setWindowTitle("Mapa do Maroto do ICMC")
+    widget.resize(1024, 684)
+    widget.show()
+
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()
