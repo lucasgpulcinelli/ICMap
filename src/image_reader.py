@@ -18,7 +18,7 @@ def imgToWalkMatrix(filename: str) -> np.ndarray:
     matrix = np.asarray(pillow_img)
     pillow_img.close()
 
-    return (matrix >= 128).sum(axis=2) > 0
+    return (matrix[:, :, 0:3] / 3).sum(axis=2) > 127
 
 
 def dirToWalkTensor(dirName: str) -> np.ndarray:
