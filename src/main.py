@@ -5,7 +5,7 @@ import json
 
 from PyQt5.QtWidgets import QApplication
 
-import ui
+from ui.app import App
 import image_reader
 
 
@@ -26,7 +26,7 @@ def main():
     rooms = loadRoomsFile("res/rooms.json")
     tensor = image_reader.dirToWalkTensor("res/map")
 
-    widget = ui.App(tensor, rooms)
+    widget = App(tensor, rooms)
     widget.setWindowTitle("Mapa do Maroto do ICMC")
     widget.resize(1024, 684)
     widget.show()
