@@ -3,6 +3,11 @@ from PyQt5.QtGui import QStandardItem, QStandardItemModel
 
 
 class RoomSearch(QWidget):
+    '''
+    class RoomSearch defines a widget that shows an interactive search bar with 
+    the options given.
+    '''
+
     def __init__(self, options, search_placeholder):
         super().__init__()
         self.options = options
@@ -28,12 +33,22 @@ class RoomSearch(QWidget):
         self.updateOptions(self.options)
 
     def updateOptions(self, options):
+        '''
+        updateOptions updates the options available in the search bar depending
+        on the text written.
+        '''
+
         self.model.clear()
         for option in options:
             item = QStandardItem(option)
             self.model.appendRow(item)
 
     def filterOptions(self, text):
+        '''
+        fileterOptions runs every time the user writes to the search bar to 
+        update the available options.
+        '''
+
         filtered_options = [
             option for option in self.options if text.lower() in option.lower()
         ]
@@ -41,6 +56,11 @@ class RoomSearch(QWidget):
         self.updateOptions(filtered_options)
 
     def selectFirst(self):
+        '''
+        selectFirst selects the first match in the options given the search bar 
+        text.
+        '''
+
         if self.search_input.text() == "":
             return None
 
@@ -53,6 +73,10 @@ class RoomSearch(QWidget):
         return t
 
     def selectPos(self):
+        '''
+        selectPos selects the text the user has clicked on.
+        '''
+
         item = None
         try:
             item = self.options_list.selectedIndexes()[0].data()

@@ -8,9 +8,17 @@ import maze_solver
 
 
 class App(QWidget):
+    '''
+    class App defines the main Qt5 window application.
+    It has an interactive interface to generate paths from a room to another 
+    with different algorithms and show them to the user.
+    '''
+
     def __init__(self, tensor, rooms):
         super().__init__()
 
+        # tensor is the boolean walk numpy array that shows if a path is
+        # walkable or not
         self.tensor = tensor
         self.rooms = rooms
 
@@ -18,6 +26,7 @@ class App(QWidget):
         self.stacked_layout = QStackedLayout()
         execute_layout = QHBoxLayout()
 
+        # the search bars to the rooms
         self.search = FromToSearch(rooms)
 
         self.button = QPushButton("Gerar Caminho")
@@ -39,10 +48,20 @@ class App(QWidget):
         self.stacked_layout.setCurrentIndex(1)
 
     def buttonToggle(self):
+        '''
+        buttonToggle either generates the path from a room to another and shows
+        it to the user or goes back to the room selection screen, depending on 
+        the state of the application.
+        '''
+
+        # if we are in the path view area, switch back to room selection
         if self.stacked_layout.currentIndex() != 0:
             self.stacked_layout.setCurrentIndex(0)
             self.button.setText("Gerar Caminho")
             return
+
+        # if we are in the room selection area, create the path to the rooms
+        # provided, if the user has given both rooms.
 
         path = self.genPath()
         if path is None:
@@ -61,6 +80,12 @@ class App(QWidget):
         self.stacked_layout.setCurrentIndex(1)
 
     def genPath(self):
+        '''
+        genPath gets the inputs from the UI to trigger path generation with 
+        the user selected algorithms. It returns the path found as in the 
+        maze_solver function definitions.
+        '''
+
         text_from = self.search.room_from.selectFirst()
         text_to = self.search.room_to.selectFirst()
 

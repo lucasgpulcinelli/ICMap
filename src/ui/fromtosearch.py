@@ -4,6 +4,12 @@ from ui.roomsearch import RoomSearch
 
 
 class FromToSearch(QWidget):
+    '''
+    class FromToSearch defines a widget with two search bars with the same 
+    options, one for the user to select a room to go to, and another to select
+    the room the user is coming from.
+    '''
+
     def __init__(self, rooms):
         super().__init__()
         self.rooms = rooms

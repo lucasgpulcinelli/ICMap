@@ -7,6 +7,11 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout
 
 
 class PathShower(QWidget):
+    '''
+    class PathShower creates and shows an interactive video based on a maze
+    solving path.
+    '''
+
     def __init__(self, path):
         super().__init__()
 
