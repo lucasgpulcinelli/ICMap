@@ -49,6 +49,10 @@ class PathShower(QWidget):
         self.player.play()
 
     def playpause(self):
+        '''
+        playpause toggles the video playback based on its current state.
+        '''
+
         action_pause = self.player.state() == self.player.PlayingState
         self.playpausebt.setText("Play" if action_pause else "Pause")
 
@@ -58,6 +62,11 @@ class PathShower(QWidget):
             self.player.play()
 
     def sliderUpdate(self):
+        '''
+        sliderUpdate runs every second to update the slider position to match 
+        video playback.
+        '''
+
         if self.player.state() != self.player.PlayingState:
             return
 
@@ -68,11 +77,22 @@ class PathShower(QWidget):
             int(self.player.position()/self.player.duration()*100))
 
     def sliderPressed(self):
+        '''
+        sliderPressed pauses the video and stops the slider timed updates 
+        while the user is dragging the slider to a new position.
+        '''
+
         self.unpauseAfter = self.player.state() == self.player.PlayingState
         self.player.pause()
         self.timer.stop()
 
     def sliderReleased(self):
+        '''
+        sliderReleased is the counterpart to sliderPressed, restaring playback
+        at the new slider position and the slider timed updates after the user 
+        stops dragging the slider.
+        '''
+
         self.player.setPosition(
             int(self.slider.sliderPosition()/100*self.player.duration()))
 
