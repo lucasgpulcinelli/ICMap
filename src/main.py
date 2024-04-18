@@ -3,6 +3,7 @@
 import sys
 import json
 import typing
+import os
 
 from PySide2.QtWidgets import QApplication
 
@@ -32,8 +33,8 @@ def loadRoomsFile(
 def main():
     app = QApplication(sys.argv)
 
-    rooms = loadRoomsFile("res/rooms.json")
-    tensor = image_reader.dirToWalkTensor("res/map")
+    rooms = loadRoomsFile(os.path.join("res", "rooms.json"))
+    tensor = image_reader.dirToWalkTensor(os.path.join("res", "map"))
 
     widget = App(tensor, rooms)
     widget.setWindowTitle("Mapa do Maroto do ICMC")
