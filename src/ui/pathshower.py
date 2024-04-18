@@ -19,7 +19,7 @@ class PathShower(QWidget):
 
         self.player = QMediaPlayer(None, QMediaPlayer.VideoSurface)
         self.player.setMedia(QMediaContent(
-            QUrl.fromLocalFile(os.path.join(os.getcwd(), "res", "path.webm"))))
+            QUrl.fromLocalFile(os.path.join(os.getcwd(), "res", "path.avi"))))
 
         self.player.setVideoOutput(self.video)
 

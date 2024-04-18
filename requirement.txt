@@ -1,3 +1,4 @@
 Pillow
 numpy
 PySide2
+opencv-python
