@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QComboBox, QHBoxLayout, QPushButton
-from PyQt5.QtWidgets import QSizePolicy, QStackedLayout, QWidget, QVBoxLayout
+from PySide2.QtWidgets import QComboBox, QHBoxLayout, QPushButton
+from PySide2.QtWidgets import QSizePolicy, QStackedLayout, QWidget, QVBoxLayout
 
 from ui.fromtosearch import FromToSearch
 from ui.pathshower import PathShower
@@ -45,7 +45,6 @@ class App(QWidget):
         layout.addLayout(execute_layout)
 
         self.setLayout(layout)
-        self.stacked_layout.setCurrentIndex(1)
 
     def buttonToggle(self):
         '''

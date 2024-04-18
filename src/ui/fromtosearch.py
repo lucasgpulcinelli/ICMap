@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QHBoxLayout, QWidget
+from PySide2.QtWidgets import QHBoxLayout, QWidget
 
 from ui.roomsearch import RoomSearch
 

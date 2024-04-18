@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QLineEdit, QListView, QWidget, QVBoxLayout
-from PyQt5.QtGui import QStandardItem, QStandardItemModel
+from PySide2.QtWidgets import QLineEdit, QListView, QWidget, QVBoxLayout
+from PySide2.QtGui import QStandardItem, QStandardItemModel
 
 
 class RoomSearch(QWidget):

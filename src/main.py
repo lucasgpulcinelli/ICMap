@@ -4,7 +4,7 @@ import sys
 import json
 import typing
 
-from PyQt5.QtWidgets import QApplication
+from PySide2.QtWidgets import QApplication
 
 from ui.app import App
 import image_reader

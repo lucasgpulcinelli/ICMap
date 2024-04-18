@@ -1,9 +1,9 @@
 import os
 
-from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
-from PyQt5.QtCore import QUrl
-from PyQt5.QtWidgets import QWidget, QVBoxLayout
+from PySide2.QtMultimediaWidgets import QVideoWidget
+from PySide2.QtMultimedia import QMediaContent, QMediaPlayer
+from PySide2.QtCore import QUrl
+from PySide2.QtWidgets import QWidget, QVBoxLayout
 
 
 class PathShower(QWidget):
