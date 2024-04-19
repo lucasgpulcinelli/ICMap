@@ -1,4 +1,4 @@
 Pillow
 numpy
 PySide2
-opencv-python
+opencv-python-headless

@@ -5,6 +5,8 @@ from PySide2.QtMultimedia import QMediaContent, QMediaPlayer
 from PySide2.QtCore import QTimer, QUrl, Qt
 from PySide2.QtWidgets import QHBoxLayout, QPushButton, QSlider, QWidget, QVBoxLayout
 
+import video
+
 
 class PathShower(QWidget):
     '''
@@ -14,6 +16,8 @@ class PathShower(QWidget):
 
     def __init__(self, path):
         super().__init__()
+
+        video.generate_video(path)
 
         self.video = QVideoWidget()
 
