@@ -1,4 +1,5 @@
 import random
+from typing import List, Tuple
 from warnings import warn
 import heapq
 import numpy as np
@@ -39,14 +40,24 @@ def return_path(current_node):
     return path[::-1]  # Return reversed path
 
 
-def astar(maze, start, end, allow_diagonal_movement = False):
+def astar(
+    maze: np.ndarray,
+    start: Tuple[int, int, int],
+    end: Tuple[int, int, int],
+    allow_diagonal_movement: bool = False
+) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
     """
     Returns a list of tuples as a path from the given start to the given end in the given maze
     :param maze:
     :param start:
     :param end:
-    :return:
+    :return path, visited, border:
     """
+
+    #list of lists with the path at each step
+    path_step = []
+    visited_step = []
+    border_step = []
 
     # Create start and end node
     start_node = Node(None, start)
@@ -84,10 +95,13 @@ def astar(maze, start, end, allow_diagonal_movement = False):
         outer_iterations += 1
 
         if outer_iterations > max_iterations:
-          # if we hit this point return the path such as it is
-          # it will not contain the destination
-          warn("giving up on pathfinding too many iterations")
-          return return_path(current_node)       
+            # if we hit this point return the path such as it is
+            # it will not contain the destination
+            warn("giving up on pathfinding too many iterations")
+            border_step.append([node.position for node in open_list])
+            visited_step.append([node.position for node in closed_list])
+            path_step.append(return_path(current_node))
+            return path_step, visited_step, border_step    
         
         # Get the current node
         current_node = heapq.heappop(open_list)
@@ -95,7 +109,10 @@ def astar(maze, start, end, allow_diagonal_movement = False):
 
         # Found the goal
         if current_node == end_node:
-            return return_path(current_node)
+            border_step.append([node.position for node in open_list])
+            visited_step.append([node.position for node in closed_list])
+            path_step.append(return_path(current_node))
+            return path_step, visited_step, border_step   
 
         # Generate children
         children = []
@@ -142,5 +159,12 @@ def astar(maze, start, end, allow_diagonal_movement = False):
             # Add the child to the open list
             heapq.heappush(open_list, child)
 
+        border_step.append([node.position for node in open_list])
+        visited_step.append([node.position for node in closed_list])
+        path_step.append(return_path(current_node))
+
     warn("Couldn't get a path to destination")
-    return None
+    border_step.append([node.position for node in open_list])
+    visited_step.append([node.position for node in closed_list])
+    path_step.append(None)
+    return path_step, visited_step, border_step   

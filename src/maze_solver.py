@@ -8,7 +8,7 @@ def solveBFS(
     tensor: np.ndarray,
     source: Tuple[int, int, int],
     destination: Tuple[int, int, int]
-) -> List[Tuple[int, int, int]]:
+) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
     '''
     solveBFS finds a path from source to destination in a boolean walk tensor 
     using a BFS search. The return is a list of tuples containing the path.
@@ -24,14 +24,18 @@ def solveBFS(
 
     _ = tensor
 
-    return [source, destination]
+    path_steps = []
+    visited_steps = []
+    border_steps = []
+
+    return path_steps, visited_steps, border_steps
 
 
 def solveAStar(
     tensor: np.ndarray,
     source: Tuple[int, int, int],
     destination: Tuple[int, int, int]
-) -> List[Tuple[int, int, int]]:
+) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
     '''
     solveAStar finds a path from source to destination in a boolean walk tensor 
     using A*. The return is a list of tuples containing the path.
@@ -52,11 +56,19 @@ def solveAStar(
     #convert maze from boolean to int
     maze = maze.astype(int)
 
-    path = a_star.astar(maze, source, destination, True)
+    path_step, visited_step, border_step = a_star.astar(maze, source, destination, True)
+
+    path = path_step[-1]
 
     print_maze(maze, source, destination, path)
 
-    return path
+    for i in range(len(path_step)):
+        print(f"Step {i}")
+        print(f"Path: {path_step[i]}")
+        print(f"Visited: {visited_step[i]}")
+        print(f"Border: {border_step[i]}")
+
+    return path_step, visited_step, border_step
 
 def print_maze(
     maze: np.ndarray,
