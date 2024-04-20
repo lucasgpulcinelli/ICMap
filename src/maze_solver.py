@@ -46,49 +46,38 @@ def solveAStar(
 
     '''
 
-    maze = tensor[0]
-
     #invert maze true is false and false is true
-    maze = np.logical_not(maze)
+    maze = np.logical_not(tensor)
 
     #convert maze from boolean to int
     maze = maze.astype(int)
 
-    start = (source[1], source[2])
-    end = (destination[1], destination[2])
-
-    path = a_star.astar(maze, start, end, True)
-
-    print("Printing maze")
-    print(maze)
+    path = a_star.astar(maze, source, destination, False)
 
     for step in path:
-        maze[step[0]][step[1]] = 2
+        maze[step[0]][step[1]][step[2]] = 2
 
-    maze[start[0]][start[1]] = 3
-    maze[end[0]][end[1]] = 4
-
+    maze[source[0]][source[1]][source[2]] = 3
+    maze[destination[0]][destination[1]][destination[2]] = 4
     
-    print("Printing maze with path")
-    print(maze)
-    
-    for row in maze:
-        line = []
-        for col in row:
-            if col == 1:
-                line.append("\u2588")
-            elif col == 0:
-                line.append(" ")
-            elif col == 2:
-                line.append(".")
-            elif col == 3:
-                line.append("S")
-            elif col == 4:
-                line.append("E")
-        print("".join(line))
+    for floor in maze:
+        for row in floor:
+            line = []
+            for col in row:
+                if col == 1:
+                    line.append("\u2588")
+                elif col == 0:
+                    line.append(" ")
+                elif col == 2:
+                    line.append(".")
+                elif col == 3:
+                    line.append("S")
+                elif col == 4:
+                    line.append("E")
+            print("".join(line))
 
     #generate path with 3d coordinates
-    path = [(0, step[0], step[1]) for step in path]
+    path = [(step[0], step[1], step[2]) for step in path]
     print(path)
 
     return path
