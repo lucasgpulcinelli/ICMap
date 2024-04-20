@@ -18,17 +18,20 @@ def generate_video(solution, scale=10):
 
     last_path = []
 
+    red = (255, 0, 0, 255)
+    cyan = (0, 255, 255, 255)
+    blue = (0, 0, 255, 255)
+
     for path, border in zip(*solution):
         for f, x, y in last_path:
-            imgs[f][x, y] = (255, 0, 0, 255)
+            imgs[f][x, y] = red
 
         if border is not None:
             for f, x, y in border:
-                imgs[f][x, y] = (0, 255, 255, 255)
+                imgs[f][x, y] = cyan
 
         for f, x, y in path:
-            imgs[f][x, y] = (0, 0, 255, 255)
-
+            imgs[f][x, y] = blue
         floor = path[-1][0]
 
         last_path = path
