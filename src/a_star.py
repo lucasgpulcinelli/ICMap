@@ -76,15 +76,19 @@ def astar(
     outer_iterations = 0
     max_iterations = (len(maze[0][0]) * len(maze[0]) * len(maze) // 4)
 
+    diagonal_cost = 1.4
+    vertical_cost = 1.0
+    horizontal_cost = 1.0
+
     adjacent_squares = ((-1, 0, 0), (1, 0, 0), (0, 0, -1), (0, 0, 1), (0, -1, 0), (0, 1, 0))
-    direction_cost= (1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
+    direction_cost= (vertical_cost, vertical_cost, horizontal_cost, horizontal_cost, horizontal_cost, horizontal_cost)
     adjacent_square_pick_index = [0, 1, 2, 3, 4, 5]
 
     # what squares do we search
     if allow_diagonal_movement:
         adjacent_squares = ((-1, 0, 0), (1, 0, 0), (0, 0, -1), (0, 0, 1), (0, -1, 0), (0, 1, 0),
                             (0, -1, -1), (0, -1, 1), (0, 1, -1), (0, 1, 1))
-        direction_cost = (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.4, 1.4, 1.4, 1.4)
+        direction_cost = (vertical_cost, vertical_cost, horizontal_cost, horizontal_cost, horizontal_cost, horizontal_cost, diagonal_cost, diagonal_cost, diagonal_cost, diagonal_cost)
         adjacent_square_pick_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     # Loop until you find the end
@@ -150,11 +154,17 @@ def astar(
             child.f = child.g + child.h
 
             # Child is already in the open list
-            if len([open_node for open_node in open_list if child.position == open_node.position and child.g > open_node.g]) > 0:
-                continue
+            if child in open_list: 
+                idx = open_list.index(child) 
+                if child.g < open_list[idx].g:
+                    # update the node in the open list
+                    open_list[idx].g = child.g
+                    open_list[idx].f = child.f
+                    open_list[idx].h = child.h
+            else:
+                heapq.heappush(open_list, child)
 
             # Add the child to the open list
-            heapq.heappush(open_list, child)
             new_border.append(child.position)
 
         border_step.append(new_border)
