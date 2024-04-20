@@ -2,6 +2,7 @@ import numpy as np
 from typing import Tuple, List
 
 import a_star
+import bfs
 
 
 def solveBFS(
@@ -24,11 +25,11 @@ def solveBFS(
 
     _ = tensor
 
-    path_steps = []
-    visited_steps = []
-    border_steps = []
+    path_step, border_step = bfs.bfs(tensor, source, destination)
 
-    return path_steps, visited_steps, border_steps
+    print(f"Steps for BFS: {len(path_step)}")
+
+    return path_step, border_step
 
 
 def solveAStarEuclidean(

@@ -178,7 +178,7 @@ def astar_2d(
     outer_iterations = 0
     max_iterations = (len(maze[0]) * len(maze) // 2)
 
-    diagonal_cost = 3.5
+    diagonal_cost = 5.0
     horizontal_cost = 1.0
 
     adjacent_squares = ((0, -1), (0, 1), (-1, 0), (1, 0))
@@ -308,7 +308,7 @@ def astar_euclidean(
     outer_iterations = 0
     max_iterations = (len(maze[0][0]) * len(maze[0]) * len(maze) // 4)
 
-    diagonal_cost = 3.5
+    diagonal_cost = 5.0
     vertical_cost = 1.0
     horizontal_cost = 1.0
 
