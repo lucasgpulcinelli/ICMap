@@ -23,7 +23,7 @@ def generate_video(solution, scale=10):
     # create the video writer with 20 fps
     fourcc = cv2.VideoWriter_fourcc(*'MPEG')
     video = cv2.VideoWriter(os.path.join(
-        "res", "path.avi"), fourcc, 20, videodims)
+        "res", "path.avi"), fourcc, 10, videodims)
 
     # the path at the previous iteration is needed to color the pixels back
     # from blue to red
@@ -75,7 +75,7 @@ def generate_video(solution, scale=10):
         resized = cv2.resize(frame, videodims,
                              interpolation=cv2.INTER_NEAREST_EXACT)
 
-        for _ in range(6):
+        for _ in range(3):
             video.write(resized)
 
     video.release()
