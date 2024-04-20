@@ -62,9 +62,8 @@ class App(QWidget):
         # if we are in the room selection area, create the path to the rooms
         # provided, if the user has given both rooms.
 
-        path_steps, border_steps = self.genPath()
-        path = path_steps[-1]
-        if path is None:
+        solution = self.genPath()
+        if solution[0][-1] is None:
             return
 
         self.button.setText("Fazer um Novo Trajeto")
@@ -74,7 +73,7 @@ class App(QWidget):
         except AttributeError:
             pass
 
-        self.path_shower = PathShower(path)
+        self.path_shower = PathShower(solution)
 
         self.stacked_layout.addWidget(self.path_shower)
         self.stacked_layout.setCurrentIndex(1)

@@ -3,29 +3,38 @@ from PIL import Image
 import cv2
 
 
-def generate_video(path):
+def generate_video(solution, scale=10):
     imgs = []
     for i in range(5):
         imgs.append(Image.open(f"res/map/{i}.png"))
 
-    videodims = imgs[0].size[0]*10, imgs[0].size[1]*10
+    videodims = imgs[0].size[0]*scale, imgs[0].size[1]*scale
 
     for i in range(5):
-        imgs[i] = np.array(
-            imgs[i].resize(videodims, Image.NEAREST))
+        imgs[i] = np.array(imgs[i])
 
-    fourcc = cv2.VideoWriter_fourcc(*'MPEG')    
-    video = cv2.VideoWriter("res/path.avi",fourcc, 1,videodims)
+    fourcc = cv2.VideoWriter_fourcc(*'MPEG')
+    video = cv2.VideoWriter("res/path.avi", fourcc, 24, videodims)
 
-    for point in path:
-        img = imgs[point[0]]
+    last_floor = -1
 
-        for i in range(10):
-            for j in range(10):
-                img[point[1]*10+i, point[2]*10+j] = (255, 0, 0, 255)
+    f, x, y = solution[0][0][0]
+    imgs[f][x, y] = (255, 0, 0, 255)
 
-        video.write(cv2.cvtColor(img, cv2.COLOR_RGBA2BGR))
-    
+    for path, visited, border in zip(*solution):
+
+        for f, x, y in border:
+            imgs[f][x, y] = (255, 0, 0, 255)
+
+        floor = path[-1][0]
+        repeats = 1 if floor == last_floor else 12
+        last_floor = floor
+
+        frame = cv2.cvtColor(imgs[floor], cv2.COLOR_RGBA2BGR)
+        resized = cv2.resize(frame, videodims,
+                             interpolation=cv2.INTER_NEAREST_EXACT)
+
+        for i in range(repeats):
+            video.write(resized)
+
     video.release()
-
-generate_video([(0, 0, 0), (1, 0, 0), (1, 0, 1), (1, 0, 2), (1, 1, 2)])

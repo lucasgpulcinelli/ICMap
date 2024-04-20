@@ -14,10 +14,10 @@ class PathShower(QWidget):
     solving path.
     '''
 
-    def __init__(self, path):
+    def __init__(self, solution):
         super().__init__()
 
-        video.generate_video(path)
+        video.generate_video(solution)
 
         self.video = QVideoWidget()
 
