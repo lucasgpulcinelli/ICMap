@@ -49,11 +49,7 @@ def solveAStarEuclidean(
     print(path) # prints [(0, 0, 0), (0, 1, 0), (0, 2, 0)]
 
     '''
-
-    # invert maze true is false and false is true
     maze = np.logical_not(tensor)
-
-    # convert maze from boolean to int
     maze = maze.astype(int)
 
     path_step, border_step = a_star.astar_euclidean(
@@ -67,17 +63,9 @@ def solveAStarPartitioned(
     destination: Tuple[int, int, int]
 ) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
     maze = np.logical_not(tensor)
-
-    # convert maze from boolean to int
     maze = maze.astype(int)
-
     path_step, border_step = a_star.astar_partitioned(
         maze, source, destination, True)
-    
-    for i in range(len(path_step)):
-        print(f"Step {i}:")
-        print(f"Path: {path_step[i]}")
-        print(f"Border: {border_step[i]}")
 
     return path_step, border_step
 
