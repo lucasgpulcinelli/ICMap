@@ -57,7 +57,7 @@ def solveAStar(
     start = (source[1], source[2])
     end = (destination[1], destination[2])
 
-    path = a_star.astar(maze, start, end, False)
+    path = a_star.astar(maze, start, end, True)
 
     print("Printing maze")
     print(maze)

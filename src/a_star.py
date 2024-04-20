@@ -72,7 +72,7 @@ def astar(maze, start, end, allow_diagonal_movement = False):
     # what squares do we search
     if allow_diagonal_movement:
         adjacent_squares = ((0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1))
-        direction_cost = (1.0, 1.0, 1.0, 1.0, 1.4, 1.4, 1.4, 1.4)
+        direction_cost = (1.0, 1.0, 1.0, 1.0, 3.0, 3.0, 3.0, 3.0)
         adjacent_square_pick_index = [0, 1, 2, 3, 4, 5, 6, 7]
 
     # Loop until you find the end
@@ -97,6 +97,7 @@ def astar(maze, start, end, allow_diagonal_movement = False):
 
         # Generate children
         children = []
+        cost_factor = []
         
         for pick_index in adjacent_square_pick_index:
             new_position = adjacent_squares[pick_index]
@@ -118,15 +119,16 @@ def astar(maze, start, end, allow_diagonal_movement = False):
 
             # Append
             children.append(new_node)
+            cost_factor.append(direction_cost_factor)
 
         # Loop through children
-        for child, cost_factor in zip(children, direction_cost):
+        for child, cost in zip(children, cost_factor):
             # Child is on the closed list
             if len([closed_child for closed_child in closed_list if closed_child == child]) > 0:
                 continue
 
             # Create the f, g, and h values
-            child.g = current_node.g + cost_factor 
+            child.g = current_node.g + cost 
             child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2)
             child.f = child.g + child.h
 
