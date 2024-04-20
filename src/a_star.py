@@ -45,7 +45,7 @@ def astar(
     start: Tuple[int, int, int],
     end: Tuple[int, int, int],
     allow_diagonal_movement: bool = False
-) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
+) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
     """
     Returns a list of tuples as a path from the given start to the given end in the given maze
     :param maze:
@@ -56,7 +56,6 @@ def astar(
 
     #list of lists with the path at each step
     path_step = []
-    visited_step = []
     border_step = []
 
     # Create start and end node
@@ -94,14 +93,13 @@ def astar(
         random.shuffle(adjacent_square_pick_index)
         outer_iterations += 1
 
+        new_border = []
+
         if outer_iterations > max_iterations:
             # if we hit this point return the path such as it is
             # it will not contain the destination
             warn("giving up on pathfinding too many iterations")
-            border_step.append([node.position for node in open_list])
-            visited_step.append([node.position for node in closed_list])
-            path_step.append(return_path(current_node))
-            return path_step, visited_step, border_step    
+            return path_step, border_step    
         
         # Get the current node
         current_node = heapq.heappop(open_list)
@@ -109,10 +107,9 @@ def astar(
 
         # Found the goal
         if current_node == end_node:
-            border_step.append([node.position for node in open_list])
-            visited_step.append([node.position for node in closed_list])
+            border_step.append(None)
             path_step.append(return_path(current_node))
-            return path_step, visited_step, border_step   
+            return path_step, border_step   
 
         # Generate children
         children = []
@@ -158,13 +155,11 @@ def astar(
 
             # Add the child to the open list
             heapq.heappush(open_list, child)
+            new_border.append(child.position)
 
-        border_step.append([node.position for node in open_list])
-        visited_step.append([node.position for node in closed_list])
+        border_step.append(new_border)
         path_step.append(return_path(current_node))
 
     warn("Couldn't get a path to destination")
-    border_step.append([node.position for node in open_list])
-    visited_step.append([node.position for node in closed_list])
     path_step.append(None)
-    return path_step, visited_step, border_step   
+    return path_step, border_step   

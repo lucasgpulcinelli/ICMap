@@ -62,7 +62,7 @@ class App(QWidget):
         # if we are in the room selection area, create the path to the rooms
         # provided, if the user has given both rooms.
 
-        path_steps, visited_steps, border_steps = self.genPath()
+        path_steps, border_steps = self.genPath()
         path = path_steps[-1]
         if path is None:
             return

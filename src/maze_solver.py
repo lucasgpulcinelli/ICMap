@@ -35,7 +35,7 @@ def solveAStar(
     tensor: np.ndarray,
     source: Tuple[int, int, int],
     destination: Tuple[int, int, int]
-) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
+) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
     '''
     solveAStar finds a path from source to destination in a boolean walk tensor 
     using A*. The return is a list of tuples containing the path.
@@ -56,10 +56,15 @@ def solveAStar(
     # convert maze from boolean to int
     maze = maze.astype(int)
 
-    path_step, visited_step, border_step = a_star.astar(
+    path_step, border_step = a_star.astar(
         maze, source, destination, True)
+    
+    for i in range(len(path_step)):
+        print(f"Step {i}")
+        print(f"Path: {path_step[i]}")
+        print(f"Border: {border_step[i]}")
 
-    return path_step, visited_step, border_step
+    return path_step, border_step
 
 
 def print_maze(
