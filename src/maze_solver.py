@@ -31,7 +31,7 @@ def solveBFS(
     return path_steps, visited_steps, border_steps
 
 
-def solveAStar(
+def solveAStarEuclidean(
     tensor: np.ndarray,
     source: Tuple[int, int, int],
     destination: Tuple[int, int, int]
@@ -56,11 +56,30 @@ def solveAStar(
     # convert maze from boolean to int
     maze = maze.astype(int)
 
-    path_step, border_step = a_star.astar(
+    path_step, border_step = a_star.astar_euclidean(
         maze, source, destination, True)
 
     return path_step, border_step
 
+def solveAStarPartitioned(
+    tensor: np.ndarray,
+    source: Tuple[int, int, int],
+    destination: Tuple[int, int, int]
+) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
+    maze = np.logical_not(tensor)
+
+    # convert maze from boolean to int
+    maze = maze.astype(int)
+
+    path_step, border_step = a_star.astar_partitioned(
+        maze, source, destination, True)
+    
+    for i in range(len(path_step)):
+        print(f"Step {i}:")
+        print(f"Path: {path_step[i]}")
+        print(f"Border: {border_step[i]}")
+
+    return path_step, border_step
 
 def print_maze(
     maze: np.ndarray,

@@ -35,7 +35,8 @@ class App(QWidget):
 
         self.algorithms = QComboBox()
         self.algorithms.addItem("Resolver usando BFS")
-        self.algorithms.addItem("Resolver Usando A*")
+        self.algorithms.addItem("Resolver Usando A* Euclidiano")
+        self.algorithms.addItem("Resolver Usando A* Particionado")
 
         self.stacked_layout.addWidget(self.search)
         execute_layout.addWidget(self.button)
@@ -96,7 +97,10 @@ class App(QWidget):
 
         if self.algorithms.currentIndex() == 0:
             solver = maze_solver.solveBFS
+        elif self.algorithms.currentIndex() == 1:
+            solver = maze_solver.solveAStarEuclidean
         else:
-            solver = maze_solver.solveAStar
+            solver = maze_solver.solveAStarPartitioned
+
 
         return solver(self.tensor, source, dest)
