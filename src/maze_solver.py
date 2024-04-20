@@ -52,15 +52,30 @@ def solveAStar(
     #convert maze from boolean to int
     maze = maze.astype(int)
 
-    path = a_star.astar(maze, source, destination, False)
+    path = a_star.astar(maze, source, destination, True)
 
-    for step in path:
-        maze[step[0]][step[1]][step[2]] = 2
+    print_maze(maze, source, destination, path)
 
-    maze[source[0]][source[1]][source[2]] = 3
-    maze[destination[0]][destination[1]][destination[2]] = 4
-    
+    return path
+
+def print_maze(
+    maze: np.ndarray,
+    source: Tuple[int, int, int] = None,
+    destination: Tuple[int, int, int] = None,
+    path: List[Tuple[int, int, int]] = None
+):
+    if path is not None:
+        for step in path:
+            maze[step[0]][step[1]][step[2]] = 2
+
+    if source is not None:
+        maze[source[0]][source[1]][source[2]] = 3
+
+    if destination is not None:
+        maze[destination[0]][destination[1]][destination[2]] = 4
+
     for floor in maze:
+        print(f"New floor\n")
         for row in floor:
             line = []
             for col in row:
@@ -75,9 +90,3 @@ def solveAStar(
                 elif col == 4:
                     line.append("E")
             print("".join(line))
-
-    #generate path with 3d coordinates
-    path = [(step[0], step[1], step[2]) for step in path]
-    print(path)
-
-    return path
