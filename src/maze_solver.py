@@ -1,6 +1,8 @@
 import numpy as np
 from typing import Tuple, List
 
+import a_star
+
 
 def solveBFS(
     tensor: np.ndarray,
@@ -44,6 +46,49 @@ def solveAStar(
 
     '''
 
-    _ = tensor
+    maze = tensor[0]
 
-    return [source, destination]
+    #invert maze true is false and false is true
+    maze = np.logical_not(maze)
+
+    #convert maze from boolean to int
+    maze = maze.astype(int)
+
+    start = (source[1], source[2])
+    end = (destination[1], destination[2])
+
+    path = a_star.astar(maze, start, end, False)
+
+    print("Printing maze")
+    print(maze)
+
+    for step in path:
+        maze[step[0]][step[1]] = 2
+
+    maze[start[0]][start[1]] = 3
+    maze[end[0]][end[1]] = 4
+
+    
+    print("Printing maze with path")
+    print(maze)
+    
+    for row in maze:
+        line = []
+        for col in row:
+            if col == 1:
+                line.append("\u2588")
+            elif col == 0:
+                line.append(" ")
+            elif col == 2:
+                line.append(".")
+            elif col == 3:
+                line.append("S")
+            elif col == 4:
+                line.append("E")
+        print("".join(line))
+
+    #generate path with 3d coordinates
+    path = [(0, step[0], step[1]) for step in path]
+    print(path)
+
+    return path

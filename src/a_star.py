@@ -97,7 +97,6 @@ def astar(maze, start, end, allow_diagonal_movement = False):
 
         # Generate children
         children = []
-        direction_cost = []
         
         for pick_index in adjacent_square_pick_index:
             new_position = adjacent_squares[pick_index]
@@ -119,7 +118,6 @@ def astar(maze, start, end, allow_diagonal_movement = False):
 
             # Append
             children.append(new_node)
-            direction_cost.append(direction_cost_factor)
 
         # Loop through children
         for child, cost_factor in zip(children, direction_cost):
