@@ -1,6 +1,7 @@
 import random
 from warnings import warn
 import heapq
+import numpy as np
 
 class Node:
     """
@@ -63,7 +64,7 @@ def astar(maze, start, end, allow_diagonal_movement = False):
 
     # Adding a stop condition
     outer_iterations = 0
-    max_iterations = (len(maze[0]) * len(maze) // 2)
+    max_iterations = (len(maze[0][0]) * len(maze[0]) * len(maze) // 4)
 
     adjacent_squares = ((-1, 0, 0), (1, 0, 0), (0, 0, -1), (0, 0, 1), (0, -1, 0), (0, 1, 0))
     direction_cost= (1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
@@ -71,9 +72,10 @@ def astar(maze, start, end, allow_diagonal_movement = False):
 
     # what squares do we search
     if allow_diagonal_movement:
-        adjacent_squares = ((0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1))
-        direction_cost = (1.0, 1.0, 1.0, 1.0, 3.0, 3.0, 3.0, 3.0)
-        adjacent_square_pick_index = [0, 1, 2, 3, 4, 5, 6, 7]
+        adjacent_squares = ((-1, 0, 0), (1, 0, 0), (0, 0, -1), (0, 0, 1), (0, -1, 0), (0, 1, 0),
+                            (0, -1, -1), (0, -1, 1), (0, 1, -1), (0, 1, 1))
+        direction_cost = (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.4, 1.4, 1.4, 1.4)
+        adjacent_square_pick_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     # Loop until you find the end
     while len(open_list) > 0:
@@ -129,7 +131,8 @@ def astar(maze, start, end, allow_diagonal_movement = False):
 
             # Create the f, g, and h values
             child.g = current_node.g + cost 
-            child.h = ((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2) + ((child.position[2] - end_node.position[2]) ** 2)
+            #we could do this without the sqrt, but this would make COST have almost no effect
+            child.h = np.sqrt(((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2) + ((child.position[2] - end_node.position[2]) ** 2))
             child.f = child.g + child.h
 
             # Child is already in the open list
