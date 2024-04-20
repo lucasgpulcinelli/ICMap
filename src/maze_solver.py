@@ -2,6 +2,7 @@ import numpy as np
 from typing import Tuple, List
 
 import a_star
+import bfs
 
 
 def solveBFS(
@@ -21,11 +22,9 @@ def solveBFS(
     path = solveBFS(map, (0, 0, 0), (0, 2, 0))
     print(path) # prints [(0, 0, 0), (0, 1, 0), (0, 2, 0)]
     '''
+    path = bfs.bfs(tensor,source,destination)
 
-    _ = tensor
-
-    return [source, destination]
-
+    return path
 
 def solveAStar(
     tensor: np.ndarray,
