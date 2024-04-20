@@ -54,6 +54,8 @@ def solveAStarEuclidean(
 
     path_step, border_step = a_star.astar_euclidean(
         maze, source, destination, True)
+    
+    print(f"Steps for euclidean A*: {len(path_step)}")
 
     return path_step, border_step
 
@@ -66,6 +68,8 @@ def solveAStarPartitioned(
     maze = maze.astype(int)
     path_step, border_step = a_star.astar_partitioned(
         maze, source, destination, True)
+    
+    print(f"Steps for partitioned A*: {len(path_step)}")
 
     return path_step, border_step
 
