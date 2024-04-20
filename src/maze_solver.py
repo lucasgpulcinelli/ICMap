@@ -58,11 +58,6 @@ def solveAStar(
 
     path_step, border_step = a_star.astar(
         maze, source, destination, True)
-    
-    for i in range(len(path_step)):
-        print(f"Step {i}")
-        print(f"Path: {path_step[i]}")
-        print(f"Border: {border_step[i]}")
 
     return path_step, border_step
 
