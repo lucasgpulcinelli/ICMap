@@ -50,25 +50,17 @@ def solveAStar(
 
     '''
 
-    #invert maze true is false and false is true
+    # invert maze true is false and false is true
     maze = np.logical_not(tensor)
 
-    #convert maze from boolean to int
+    # convert maze from boolean to int
     maze = maze.astype(int)
 
-    path_step, visited_step, border_step = a_star.astar(maze, source, destination, True)
-
-    path = path_step[-1]
-
-    print_maze(maze, source, destination, path)
-
-    for i in range(len(path_step)):
-        print(f"Step {i}")
-        print(f"Path: {path_step[i]}")
-        print(f"Visited: {visited_step[i]}")
-        print(f"Border: {border_step[i]}")
+    path_step, visited_step, border_step = a_star.astar(
+        maze, source, destination, True)
 
     return path_step, visited_step, border_step
+
 
 def print_maze(
     maze: np.ndarray,
