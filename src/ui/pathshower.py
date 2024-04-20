@@ -45,9 +45,17 @@ class PathShower(QWidget):
         l = QVBoxLayout()
         l.addWidget(self.video)
 
+        buttonback = QPushButton("back one frame")
+        buttonback.clicked.connect(self.backframe)
+
+        buttonfwd = QPushButton("forward one frame")
+        buttonfwd.clicked.connect(self.fwdframe)
+
         hb = QHBoxLayout()
         hb.addWidget(self.playpausebt)
         hb.addWidget(self.slider)
+        hb.addWidget(buttonback)
+        hb.addWidget(buttonfwd)
 
         l.addLayout(hb)
 
@@ -56,6 +64,14 @@ class PathShower(QWidget):
         self.pauseTimer.start()
         self.sliderTimer.start()
         self.player.play()
+
+    def backframe(self):
+        self.player.pause()
+        self.player.setPosition(self.player.position()-1000//20)
+
+    def fwdframe(self):
+        self.player.pause()
+        self.player.setPosition(self.player.position()+1000//20)
 
     def playpause(self):
         '''

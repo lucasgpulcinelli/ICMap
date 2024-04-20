@@ -14,7 +14,7 @@ def generate_video(solution, scale=10):
         imgs[i] = np.array(imgs[i])
 
     fourcc = cv2.VideoWriter_fourcc(*'MPEG')
-    video = cv2.VideoWriter("res/path.avi", fourcc, 24, videodims)
+    video = cv2.VideoWriter("res/path.avi", fourcc, 20, videodims)
 
     last_path = []
 
