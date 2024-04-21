@@ -33,13 +33,13 @@ class Node:
     def __gt__(self, other):
       return self.f > other.f
 
-def return_path(current_node):
-    path = []
-    current = current_node
-    while current is not None:
-        path.append(current.position)
-        current = current.parent
-    return path[::-1]  # Return reversed path
+    def return_path(self):
+        path = []
+        current = self
+        while current is not None:
+            path.append(current.position)
+            current = current.parent
+        return path[::-1]  # Return reversed path
 
 def astar_partitioned(
     maze: np.ndarray,
@@ -195,16 +195,15 @@ def astar(
         if current_node == end_node and open_list[0].f >= current_node.f:
             #! we are done
             border_step.append(None)
-            path_step.append(return_path(current_node))
+            path_step.append(current_node.return_path())
             return path_step, border_step   
 
-        # Generate children
+        
         children = []
         cost_factor = []
-        
-        for adjacent_square in adjacent_squares:
-            new_position = adjacent_square[1]
-            direction_cost_factor = adjacent_square[0]
+        for neighbors in adjacent_squares:
+            new_position = neighbors[1]
+            direction_cost_factor = neighbors[0]
 
             # Get node position
             node_position = tuple([current_node.position[i] + new_position[i] for i in range(dimension)])
@@ -249,7 +248,7 @@ def astar(
             new_border.append(child.position)
 
         border_step.append(new_border)
-        path_step.append(return_path(current_node))
+        path_step.append(current_node.return_path())
 
     warn("Couldn't get a path to destination")
     path_step.append(None)
