@@ -220,9 +220,7 @@ def astar(
             path_step.append(current_node.return_path())
             return path_step, border_step   
 
-        for neighbors in adjacent_squares:
-            direction_cost_factor, new_position = neighbors
-
+        for new_position in adjacent_squares:
             # Get node position
             node_position = tuple([current_node.position[i] + new_position[i] for i in range(dimension)])
             new_node = Node(current_node, node_position)
@@ -238,7 +236,7 @@ def astar(
 
             child = new_node #the new node is a valid child of the current_node
             #calculate the heuristic
-            child.g = current_node.g + direction_cost_factor
+            child.g = current_node.g + utils.euclidean_distance(dimension, current_node.position, child.position)
             child.h = child.euclidean_distance(end_node)
             child.f = child.g + child.h
 
