@@ -156,45 +156,44 @@ def astar(
         raise ValueError("Start and end must have the same number of dimensions as the maze")
 
     #list of lists with the path at each step
-    path_step = []
-    border_step = []
 
     # Create start and end node
     start_node = Node(None, start)
     end_node = Node(None, end)
 
-    # Initialize both open and closed list
-    open_list = []
-    closed_list = []
+    #list with a list of nodes for every iteration of the algorithm
+    path_step = []
+    border_step = []
 
-    # Heapify the open_list and Add the start node
-    heapq.heapify(open_list) 
+    closed_list = []
+    open_list = []
+    heapq.heapify(open_list) #create priority queue for open list
     heapq.heappush(open_list, start_node)
 
     # Adding a stop condition
     outer_iterations = 0
-    max_iterations = (maze.size // 4)
+    max_iterations = (maze.size // 2)
 
     adjacent_squares = utils.generate_adjacent_squares(dimension, diagonal_level)
 
     # Loop until you find the end
     while len(open_list) > 0:
+        random.shuffle(adjacent_squares) #shuffle to avoid bias
         outer_iterations += 1
 
         new_border = []
 
         if outer_iterations > max_iterations:
-            # if we hit this point return the path such as it is
-            # it will not contain the destination
-            warn("giving up on pathfinding too many iterations")
+            # if we cannot find searching for half the maze, we give up
+            warn("giving up on pathfinding. too many iterations")
             return path_step, border_step    
         
         # Get the current node
         current_node = heapq.heappop(open_list)
         closed_list.append(current_node)
 
-        # !Found the goal
         if current_node == end_node and open_list[0].f >= current_node.f:
+            #! we are done
             border_step.append(None)
             path_step.append(return_path(current_node))
             return path_step, border_step   
