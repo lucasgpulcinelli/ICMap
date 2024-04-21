@@ -66,10 +66,10 @@ class PathShower(QWidget):
         self.playpausebt.setText("Play")
 
         if self.player.position() == 0:
-            self.player.setPosition(self.player.duration()-1000//20)
+            self.player.setPosition(self.player.duration()-100)
             return
 
-        self.player.setPosition(self.player.position()-1000//20)
+        self.player.setPosition(self.player.position()-100)
 
     def fwdframe(self):
         self.player.pause()
@@ -79,7 +79,7 @@ class PathShower(QWidget):
             self.player.setPosition(0)
             return
 
-        self.player.setPosition(self.player.position()+1000//20)
+        self.player.setPosition(self.player.position()+100)
 
     def playpause(self):
         '''
