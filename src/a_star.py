@@ -40,6 +40,30 @@ class Node:
             path.append(current.position)
             current = current.parent
         return path[::-1]  # Return reversed path
+    
+    def euclidean_distance(self, other):
+        return round(sum([(self.position[i] - other.position[i])**2 for i in range(len(self.position))]) ** 0.5, 3)
+
+    def is_outside(self, maze):
+        def check_dimension(dim_maze, position, dim=0):
+            if dim >= len(position):
+                return False
+            
+            if position[dim] < 0 or position[dim] >= len(dim_maze):
+                return True
+            
+            return check_dimension(dim_maze[position[dim]], position, dim + 1)
+        
+        return check_dimension(maze, self.position)
+
+    def is_wall(self, maze):
+        def navigate_dimension(dim_maze, position, dim=0):
+            if dim == len(position) - 1:
+                return dim_maze[position[dim]] == 0
+            
+            return navigate_dimension(dim_maze[position[dim]], position, dim + 1)
+        
+        return navigate_dimension(maze, self.position)
 
 def astar_partitioned(
     maze: np.ndarray,
@@ -178,11 +202,9 @@ def astar(
 
     # Loop until you find the end
     while len(open_list) > 0:
-        random.shuffle(adjacent_squares) #shuffle to avoid bias
         outer_iterations += 1
 
         new_border = []
-
         if outer_iterations > max_iterations:
             # if we cannot find searching for half the maze, we give up
             warn("giving up on pathfinding. too many iterations")
@@ -198,53 +220,39 @@ def astar(
             path_step.append(current_node.return_path())
             return path_step, border_step   
 
-        
-        children = []
-        cost_factor = []
         for neighbors in adjacent_squares:
-            new_position = neighbors[1]
-            direction_cost_factor = neighbors[0]
+            direction_cost_factor, new_position = neighbors
 
             # Get node position
             node_position = tuple([current_node.position[i] + new_position[i] for i in range(dimension)])
-
-            # make sure within range for a 3d array
-            if not utils.is_within_bounds(maze, node_position):
-                continue
-
-            # Make sure walkable terrain
-            if utils.is_wall(maze, node_position):
-                continue
-
-            # Create new node
             new_node = Node(current_node, node_position)
 
-            # Append
-            children.append(new_node)
-            cost_factor.append(direction_cost_factor)
-
-        # Loop through children
-        for child, cost in zip(children, cost_factor):
-            # Child is on the closed list
-            if len([closed_child for closed_child in closed_list if closed_child == child]) > 0:
+            if new_node.is_outside(maze):
                 continue
 
-            # Create the f, g, and h values
-            child.g = current_node.g + cost 
-            #we could do this without the sqrt, but this would make COST have almost no effect
-            child.h = utils.euclidean_distance(dimension, child.position, end_node.position)
+            if new_node.is_wall(maze):
+                continue
+
+            if new_node in closed_list:
+                continue
+
+            child = new_node #the new node is a valid child of the current_node
+            #calculate the heuristic
+            child.g = current_node.g + direction_cost_factor
+            child.h = child.euclidean_distance(end_node)
             child.f = child.g + child.h
 
-            # Child is already in the open list
+            #add or update the child to the open list
             if child in open_list: 
-                idx = open_list.index(child) 
-                if child.g < open_list[idx].g:
+                i = open_list.index(child) 
+                if child.g < open_list[i].g:
                     # update the node in the open list
-                    open_list.pop(idx)
+                    open_list.pop(i)
                     heapq.heappush(open_list, child)
             else:
                 heapq.heappush(open_list, child)
 
+            # update the border for this step
             new_border.append(child.position)
 
         border_step.append(new_border)
