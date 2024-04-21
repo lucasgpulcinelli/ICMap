@@ -27,24 +27,3 @@ def generate_adjacent_squares(n, diagonal_level):
         distance = euclidean_distance(n, x, center)
         adjacent_coordinates.append((distance, x))
     return adjacent_coordinates
-
-def is_within_bounds(maze, node_position):
-    def check_dimension(dim_maze, position, dim=0):
-        if dim >= len(node_position):
-            return True
-        
-        if position[dim] < 0 or position[dim] >= len(dim_maze):
-            return False
-        
-        return check_dimension(dim_maze[position[dim]], position, dim + 1)
-    
-    return check_dimension(maze, node_position)
-
-def is_wall(maze, node_position):
-    def navigate_dimension(dim_maze, position, dim=0):
-        if dim == len(position) - 1:
-            return dim_maze[position[dim]] == 0
-        
-        return navigate_dimension(dim_maze[position[dim]], position, dim + 1)
-    
-    return navigate_dimension(maze, node_position)
