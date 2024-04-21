@@ -50,11 +50,10 @@ def solveAStarEuclidean(
     print(path) # prints [(0, 0, 0), (0, 1, 0), (0, 2, 0)]
 
     '''
-    maze = np.logical_not(tensor)
-    maze = maze.astype(int)
+    #maze = np.logical_not(tensor)
+    maze = tensor.astype(int)
 
-    path_step, border_step = a_star.astar_euclidean(
-        maze, source, destination, True)
+    path_step, border_step = a_star.astar(maze, source, destination, 2)
     
     print(f"Steps for euclidean A*: {len(path_step)}")
 
@@ -65,8 +64,7 @@ def solveAStarPartitioned(
     source: Tuple[int, int, int],
     destination: Tuple[int, int, int]
 ) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
-    maze = np.logical_not(tensor)
-    maze = maze.astype(int)
+    maze = tensor.astype(int)
     path_step, border_step = a_star.astar_partitioned(
         maze, source, destination, True)
     

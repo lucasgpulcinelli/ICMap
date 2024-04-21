@@ -4,6 +4,7 @@ from warnings import warn
 import heapq
 import numpy as np
 import json
+import utils
 
 class Node:
     """
@@ -54,11 +55,10 @@ def astar_partitioned(
     maze: np.ndarray,
     start: Tuple[int, int, int],
     end: Tuple[int, int, int],
-    allow_diagonal_movement: bool = False
+    diagonal_level: int = 1
 ) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
     if start[0] == end[0]:
-        path_step, border_step = astar_euclidean(maze, start, end, allow_diagonal_movement)
-        return path_step, border_step
+        return astar(maze, start, end, diagonal_level)
     
     f = open("res/stairs.json")
     stairs = json.load(f)
@@ -94,7 +94,7 @@ def astar_partitioned(
     while 1:
         if i < len(start_euclidean_distances):
             destiny = start_euclidean_distances[i][0]
-            paths, borders = astar_2d(maze[start[0]], start_2d, destiny, allow_diagonal_movement)
+            paths, borders = astar(maze[start[0]], start_2d, destiny, diagonal_level)
 
             paths = add_floor_to_steps(paths, start[0])
             borders = add_floor_to_steps(borders, start[0])
@@ -119,7 +119,7 @@ def astar_partitioned(
 
         if i < len(end_euclidean_distances):
             destiny = end_euclidean_distances[i][0]
-            paths, borders = astar_2d(maze[end[0]], end_2d, destiny, allow_diagonal_movement)
+            paths, borders = astar(maze[end[0]], end_2d, destiny, diagonal_level)
             paths = add_floor_to_steps(paths, end[0])
             borders = add_floor_to_steps(borders, end[0])
             path_step += paths
@@ -142,149 +142,26 @@ def astar_partitioned(
         i += 1
     return None
 
-def astar_2d(
+def astar(
     maze: np.ndarray,
-    start: Tuple[int, int],
-    end: Tuple[int, int],
-    allow_diagonal_movement: bool = False
-) -> Tuple[List[List[Tuple[int, int]]], List[List[Tuple[int, int]]]]:
+    start,
+    end,
+    diagonal_level: int = 1
+) -> Tuple[List[List], List[List]]:
     """
     Returns a list of tuples as a path from the given start to the given end in the given maze
     :param maze:
     :param start:
     :param end:
-    :return:
-    """
-
-    #list of lists with the path at each step
-    path_step = []
-    border_step = []
-
-    # Create start and end node
-    start_node = Node(None, start)
-    start_node.g = start_node.h = start_node.f = 0
-    end_node = Node(None, end)
-    end_node.g = end_node.h = end_node.f = 0
-
-    # Initialize both open and closed list
-    open_list = []
-    closed_list = []
-
-    # Heapify the open_list and Add the start node
-    heapq.heapify(open_list) 
-    heapq.heappush(open_list, start_node)
-
-    # Adding a stop condition
-    outer_iterations = 0
-    max_iterations = (len(maze[0]) * len(maze) // 2)
-
-    diagonal_cost = 5.0
-    horizontal_cost = 1.0
-
-    adjacent_squares = ((0, -1), (0, 1), (-1, 0), (1, 0))
-    direction_cost= (horizontal_cost, horizontal_cost, horizontal_cost, horizontal_cost)
-    adjacent_square_pick_index = [0, 1, 2, 3]
-
-    # what squares do we search
-    if allow_diagonal_movement:
-        adjacent_squares = ((0, -1), (0, 1), (-1, 0), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1))
-        direction_cost = (horizontal_cost, horizontal_cost, horizontal_cost, horizontal_cost, diagonal_cost, diagonal_cost, diagonal_cost, diagonal_cost)
-        adjacent_square_pick_index = [0, 1, 2, 3, 4, 5, 6, 7]
-
-    # Loop until you find the end
-    while len(open_list) > 0:
-        #Randomize the order of the adjacent_squares_pick_index to avoid a decision making bias
-        random.shuffle(adjacent_square_pick_index)
-        outer_iterations += 1
-
-        new_border = []
-
-        if outer_iterations > max_iterations:
-          # if we hit this point return the path such as it is
-          # it will not contain the destination
-          warn("giving up on pathfinding too many iterations")
-          return return_path(current_node)       
-        
-        # Get the current node
-        current_node = heapq.heappop(open_list)
-        closed_list.append(current_node)
-
-        # Found the goal
-        if current_node == end_node:
-            border_step.append(None)
-            path_step.append(return_path(current_node))
-            return path_step, border_step   
-
-        # Generate children
-        children = []
-        cost_factor = []
-        
-        for pick_index in adjacent_square_pick_index:
-            new_position = adjacent_squares[pick_index]
-            direction_cost_factor = direction_cost[pick_index]
-
-            # Get node position
-            node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
-
-            # Make sure within range
-            if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) -1) or node_position[1] < 0:
-                continue
-
-            # Make sure walkable terrain
-            if maze[node_position[0]][node_position[1]] != 0:
-                continue
-
-            # Create new node
-            new_node = Node(current_node, node_position)
-
-            # Append
-            children.append(new_node)
-            cost_factor.append(direction_cost_factor)
-
-        # Loop through children
-        for child, cost in zip(children, cost_factor):
-            # Child is on the closed list
-            if len([closed_child for closed_child in closed_list if closed_child == child]) > 0:
-                continue
-
-            # Create the f, g, and h values
-            child.g = current_node.g + cost 
-            child.h = np.sqrt(((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2))
-            child.f = child.g + child.h
-
-            # Child is already in the open list
-            if child in open_list: 
-                idx = open_list.index(child) 
-                if child.g < open_list[idx].g:
-                    # update the node in the open list
-                    open_list[idx].g = child.g
-                    open_list[idx].f = child.f
-                    open_list[idx].h = child.h
-            else:
-                heapq.heappush(open_list, child)
-
-            new_border.append(child.position)
-
-        border_step.append(new_border)
-        path_step.append(return_path(current_node))
-
-    warn("Couldn't get a path to destination")
-    path_step.append(None)
-    return path_step, border_step  
-
-def astar_euclidean(
-    maze: np.ndarray,
-    start: Tuple[int, int, int],
-    end: Tuple[int, int, int],
-    allow_diagonal_movement: bool = False
-) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
-    """
-    Returns a list of tuples as a path from the given start to the given end in the given maze
-    :param maze:
-    :param start:
-    :param end:
+    :param diagonal_level: how many planes should consider diagonals (keep between 1 and maze_dimension)
     :return path, visited, border:
     """
+    dimension = len(maze.shape)
+    if diagonal_level < 1 or diagonal_level > dimension:
+        raise ValueError("Diagonal level cannot be less than 1 or greater than the number of dimensions")
+    
+    if len(start) != dimension or len(end) != dimension:
+        raise ValueError("Start and end must have the same number of dimensions as the maze")
 
     #list of lists with the path at each step
     path_step = []
@@ -292,9 +169,7 @@ def astar_euclidean(
 
     # Create start and end node
     start_node = Node(None, start)
-    start_node.g = start_node.h = start_node.f = 0
     end_node = Node(None, end)
-    end_node.g = end_node.h = end_node.f = 0
 
     # Initialize both open and closed list
     open_list = []
@@ -306,27 +181,12 @@ def astar_euclidean(
 
     # Adding a stop condition
     outer_iterations = 0
-    max_iterations = (len(maze[0][0]) * len(maze[0]) * len(maze) // 4)
+    max_iterations = (maze.size // 4)
 
-    diagonal_cost = 5.0
-    vertical_cost = 1.0
-    horizontal_cost = 1.0
-
-    adjacent_squares = ((-1, 0, 0), (1, 0, 0), (0, 0, -1), (0, 0, 1), (0, -1, 0), (0, 1, 0))
-    direction_cost= (vertical_cost, vertical_cost, horizontal_cost, horizontal_cost, horizontal_cost, horizontal_cost)
-    adjacent_square_pick_index = [0, 1, 2, 3, 4, 5]
-
-    # what squares do we search
-    if allow_diagonal_movement:
-        adjacent_squares = ((-1, 0, 0), (1, 0, 0), (0, 0, -1), (0, 0, 1), (0, -1, 0), (0, 1, 0),
-                            (0, -1, -1), (0, -1, 1), (0, 1, -1), (0, 1, 1))
-        direction_cost = (vertical_cost, vertical_cost, horizontal_cost, horizontal_cost, horizontal_cost, horizontal_cost, diagonal_cost, diagonal_cost, diagonal_cost, diagonal_cost)
-        adjacent_square_pick_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    adjacent_squares = utils.generate_adjacent_squares(dimension, diagonal_level)
 
     # Loop until you find the end
     while len(open_list) > 0:
-        #Randomize the order of the adjacent_squares_pick_index to avoid a decision making bias
-        random.shuffle(adjacent_square_pick_index)
         outer_iterations += 1
 
         new_border = []
@@ -341,8 +201,8 @@ def astar_euclidean(
         current_node = heapq.heappop(open_list)
         closed_list.append(current_node)
 
-        # Found the goal
-        if current_node == end_node:
+        # !Found the goal
+        if current_node == end_node and open_list[0].f >= current_node.f:
             border_step.append(None)
             path_step.append(return_path(current_node))
             return path_step, border_step   
@@ -351,19 +211,19 @@ def astar_euclidean(
         children = []
         cost_factor = []
         
-        for pick_index in adjacent_square_pick_index:
-            new_position = adjacent_squares[pick_index]
-            direction_cost_factor = direction_cost[pick_index]
+        for adjacent_square in adjacent_squares:
+            new_position = adjacent_square[1]
+            direction_cost_factor = adjacent_square[0]
 
             # Get node position
-            node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1], current_node.position[2] + new_position[2])
+            node_position = tuple([current_node.position[i] + new_position[i] for i in range(dimension)])
 
             # make sure within range for a 3d array
-            if node_position[0] > (len(maze) - 1) or node_position[0] < 0 or node_position[1] > (len(maze[len(maze)-1]) -1) or node_position[1] < 0 or node_position[2] > (len(maze[len(maze)-1][0]) -1) or node_position[2] < 0:
+            if not utils.is_within_bounds(maze, node_position):
                 continue
 
             # Make sure walkable terrain
-            if maze[node_position[0]][node_position[1]][node_position[2]] != 0:
+            if utils.is_wall(maze, node_position):
                 continue
 
             # Create new node
@@ -382,7 +242,7 @@ def astar_euclidean(
             # Create the f, g, and h values
             child.g = current_node.g + cost 
             #we could do this without the sqrt, but this would make COST have almost no effect
-            child.h = np.sqrt(((child.position[0] - end_node.position[0]) ** 2) + ((child.position[1] - end_node.position[1]) ** 2) + ((child.position[2] - end_node.position[2]) ** 2))
+            child.h = round(utils.euclidean_distance(dimension, child.position, end_node.position), 2)
             child.f = child.g + child.h
 
             # Child is already in the open list
@@ -390,9 +250,7 @@ def astar_euclidean(
                 idx = open_list.index(child) 
                 if child.g < open_list[idx].g:
                     # update the node in the open list
-                    open_list[idx].g = child.g
-                    open_list[idx].f = child.f
-                    open_list[idx].h = child.h
+                    open_list[idx] = child
             else:
                 heapq.heappush(open_list, child)
 
