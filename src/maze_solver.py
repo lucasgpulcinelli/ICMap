@@ -2,6 +2,7 @@ import numpy as np
 from typing import Tuple, List
 
 import a_star
+import bfs
 
 
 def solveBFS(
@@ -21,9 +22,7 @@ def solveBFS(
     path = solveBFS(map, (0, 0, 0), (0, 2, 0))
     print(path) # prints [(0, 0, 0), (0, 1, 0), (0, 2, 0)]
     '''
-
-    _ = tensor
-
+    path = bfs.bfs(tensor,source,destination)
     path_steps = []
     visited_steps = []
     border_steps = []
@@ -35,7 +34,7 @@ def solveAStar(
     tensor: np.ndarray,
     source: Tuple[int, int, int],
     destination: Tuple[int, int, int]
-) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
+) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
     '''
     solveAStar finds a path from source to destination in a boolean walk tensor 
     using A*. The return is a list of tuples containing the path.
@@ -56,10 +55,10 @@ def solveAStar(
     # convert maze from boolean to int
     maze = maze.astype(int)
 
-    path_step, visited_step, border_step = a_star.astar(
+    path_step, border_step = a_star.astar(
         maze, source, destination, True)
 
-    return path_step, visited_step, border_step
+    return path_step, border_step
 
 
 def print_maze(

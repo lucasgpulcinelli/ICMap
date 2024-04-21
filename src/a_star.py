@@ -45,7 +45,7 @@ def astar(
     start: Tuple[int, int, int],
     end: Tuple[int, int, int],
     allow_diagonal_movement: bool = False
-) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
+) -> Tuple[List[List[Tuple[int, int, int]]], List[List[Tuple[int, int, int]]]]:
     """
     Returns a list of tuples as a path from the given start to the given end in the given maze
     :param maze:
@@ -56,7 +56,6 @@ def astar(
 
     #list of lists with the path at each step
     path_step = []
-    visited_step = []
     border_step = []
 
     # Create start and end node
@@ -77,15 +76,19 @@ def astar(
     outer_iterations = 0
     max_iterations = (len(maze[0][0]) * len(maze[0]) * len(maze) // 4)
 
+    diagonal_cost = 1.4
+    vertical_cost = 1.0
+    horizontal_cost = 1.0
+
     adjacent_squares = ((-1, 0, 0), (1, 0, 0), (0, 0, -1), (0, 0, 1), (0, -1, 0), (0, 1, 0))
-    direction_cost= (1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
+    direction_cost= (vertical_cost, vertical_cost, horizontal_cost, horizontal_cost, horizontal_cost, horizontal_cost)
     adjacent_square_pick_index = [0, 1, 2, 3, 4, 5]
 
     # what squares do we search
     if allow_diagonal_movement:
         adjacent_squares = ((-1, 0, 0), (1, 0, 0), (0, 0, -1), (0, 0, 1), (0, -1, 0), (0, 1, 0),
                             (0, -1, -1), (0, -1, 1), (0, 1, -1), (0, 1, 1))
-        direction_cost = (1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.4, 1.4, 1.4, 1.4)
+        direction_cost = (vertical_cost, vertical_cost, horizontal_cost, horizontal_cost, horizontal_cost, horizontal_cost, diagonal_cost, diagonal_cost, diagonal_cost, diagonal_cost)
         adjacent_square_pick_index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     # Loop until you find the end
@@ -94,14 +97,13 @@ def astar(
         random.shuffle(adjacent_square_pick_index)
         outer_iterations += 1
 
+        new_border = []
+
         if outer_iterations > max_iterations:
             # if we hit this point return the path such as it is
             # it will not contain the destination
             warn("giving up on pathfinding too many iterations")
-            border_step.append([node.position for node in open_list])
-            visited_step.append([node.position for node in closed_list])
-            path_step.append(return_path(current_node))
-            return path_step, visited_step, border_step    
+            return path_step, border_step    
         
         # Get the current node
         current_node = heapq.heappop(open_list)
@@ -109,10 +111,9 @@ def astar(
 
         # Found the goal
         if current_node == end_node:
-            border_step.append([node.position for node in open_list])
-            visited_step.append([node.position for node in closed_list])
+            border_step.append(None)
             path_step.append(return_path(current_node))
-            return path_step, visited_step, border_step   
+            return path_step, border_step   
 
         # Generate children
         children = []
@@ -153,18 +154,22 @@ def astar(
             child.f = child.g + child.h
 
             # Child is already in the open list
-            if len([open_node for open_node in open_list if child.position == open_node.position and child.g > open_node.g]) > 0:
-                continue
+            if child in open_list: 
+                idx = open_list.index(child) 
+                if child.g < open_list[idx].g:
+                    # update the node in the open list
+                    open_list[idx].g = child.g
+                    open_list[idx].f = child.f
+                    open_list[idx].h = child.h
+            else:
+                heapq.heappush(open_list, child)
 
             # Add the child to the open list
-            heapq.heappush(open_list, child)
+            new_border.append(child.position)
 
-        border_step.append([node.position for node in open_list])
-        visited_step.append([node.position for node in closed_list])
+        border_step.append(new_border)
         path_step.append(return_path(current_node))
 
     warn("Couldn't get a path to destination")
-    border_step.append([node.position for node in open_list])
-    visited_step.append([node.position for node in closed_list])
     path_step.append(None)
-    return path_step, visited_step, border_step   
+    return path_step, border_step   

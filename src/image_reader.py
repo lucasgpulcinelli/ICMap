@@ -1,42 +1,52 @@
+import typing
 from PIL import Image
 import numpy as np
 import os
 
 
-def imgToWalkMatrix(filename: str) -> np.ndarray:
+def getImgs(dirName: str) -> typing.List[Image.Image]:
     '''
-    imgToWalkMatrix reads a file containing an image and returns a boolean 
-    matrix with the same size as the image such that all elements that are 
-    considered "walkable" are valued True and the rest are valued as False.
-
-    Pixels are considered walkable if any of the RGB components are bright 
-    enough.
-    '''
-
-    pillow_img = Image.open(filename)
-
-    matrix = np.asarray(pillow_img)
-    pillow_img.close()
-
-    return (matrix[:, :, 0:3] / 3).sum(axis=2) > 127
-
-
-def dirToWalkTensor(dirName: str) -> np.ndarray:
-    '''
-    dirToTensor reads all files named 0.png, 1.png, 2.png, etc. in a directory 
-    in order and creates a tensor with all walkable pixels. 
+    getImgs reads all images in a directory named 0.png, 1.png, 2.png etc.
 
     It is assumed all images have the same size in the rest of the program.
     '''
 
-    tensor = []
+    imgs = []
+    i = 0
+
     try:
-        i = 0
         while True:
-            matrix = imgToWalkMatrix(os.path.join(dirName, f'{i}.png'))
-            tensor.append(matrix)
+            imgs.append(Image.open(os.path.join(dirName, f"{i}.png")))
             i += 1
     except FileNotFoundError:
         pass
 
-    return np.array(tensor)
+    for i, img in enumerate(imgs):
+        npI = np.array(img)
+        img.close()
+        imgs[i] = npI
+
+    return imgs
+
+
+def dirToWalkTensor(dirName: str) -> np.ndarray:
+    '''
+    dirToTensor reads all files named 0.png, 1.png, 2.png, etc. in a directory
+    in order and returns a boolean tensor with the same size as the images such
+    that all elements that are considered "walkable" are valued True and the
+    rest are valued as False.
+
+    Pixels are considered walkable if any of the RGB components are bright
+    enough.
+    '''
+
+    imgs = getImgs(dirName)
+
+    npTensor = np.array(imgs)
+
+    # for every coordinate, divide by three the rgb values and sum them, if
+    # the sum is > 127 the coordinate is walkable (the division is needed
+    # because just addind them would cause an integer overflow)
+    boolTensor = (npTensor[:, :, :, 0:3] / 3).sum(axis=3) > 127
+
+    return boolTensor

@@ -14,10 +14,10 @@ class PathShower(QWidget):
     solving path.
     '''
 
-    def __init__(self, path):
+    def __init__(self, solution):
         super().__init__()
 
-        video.generate_video(path)
+        video.generate_video(solution)
 
         self.video = QVideoWidget()
 
@@ -39,23 +39,47 @@ class PathShower(QWidget):
         self.slider.sliderPressed.connect(self.sliderPressed)
         self.slider.sliderReleased.connect(self.sliderReleased)
 
-        self.pauseTimer = QTimer()
-        self.pauseTimer.timeout.connect(self.pauseOnEnd)
-
         l = QVBoxLayout()
         l.addWidget(self.video)
+
+        buttonback = QPushButton("back one frame")
+        buttonback.clicked.connect(self.backframe)
+
+        buttonfwd = QPushButton("forward one frame")
+        buttonfwd.clicked.connect(self.fwdframe)
 
         hb = QHBoxLayout()
         hb.addWidget(self.playpausebt)
         hb.addWidget(self.slider)
+        hb.addWidget(buttonback)
+        hb.addWidget(buttonfwd)
 
         l.addLayout(hb)
 
         self.setLayout(l)
 
-        self.pauseTimer.start()
         self.sliderTimer.start()
         self.player.play()
+
+    def backframe(self):
+        self.player.pause()
+        self.playpausebt.setText("Play")
+
+        if self.player.position() == 0:
+            self.player.setPosition(self.player.duration()-100)
+            return
+
+        self.player.setPosition(self.player.position()-100)
+
+    def fwdframe(self):
+        self.player.pause()
+        self.playpausebt.setText("Play")
+
+        if self.player.position() == self.player.duration():
+            self.player.setPosition(0)
+            return
+
+        self.player.setPosition(self.player.position()+100)
 
     def playpause(self):
         '''
@@ -66,7 +90,7 @@ class PathShower(QWidget):
         action_pause = self.player.state() == self.player.PlayingState
         self.playpausebt.setText("Play" if action_pause else "Pause")
 
-        if self.player.position() >= self.player.duration() - 60:
+        if self.player.position() == self.player.duration():
             self.player.setPosition(0)
             self.slider.setSliderPosition(0)
 
@@ -74,20 +98,6 @@ class PathShower(QWidget):
             self.player.pause()
         else:
             self.player.play()
-
-    def pauseOnEnd(self):
-        '''
-        pauseOnEnd runs on a timer to pause the video on its last few frames.
-        '''
-
-        if self.player.duration() == 0:
-            return
-
-        if self.player.position() < self.player.duration() - 50:
-            return
-
-        self.player.pause()
-        self.playpausebt.setText("Play")
 
     def sliderUpdate(self):
         '''
