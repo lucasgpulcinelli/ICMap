@@ -23,8 +23,6 @@ def solveBFS(
     print(path) # prints [(0, 0, 0), (0, 1, 0), (0, 2, 0)]
     '''
 
-    _ = tensor
-
     path_step, border_step = bfs.bfs(tensor, source, destination)
 
     print(f"Steps for BFS: {len(path_step)}")
