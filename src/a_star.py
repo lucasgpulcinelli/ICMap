@@ -41,16 +41,6 @@ def return_path(current_node):
         current = current.parent
     return path[::-1]  # Return reversed path
 
-def add_floor_to_steps(steps, floor):
-    new_steps = []
-    for step in steps:
-        if step is not None:
-            new_step = [(floor, x, y) for x, y in step]
-            new_steps.append(new_step)
-        else:
-            new_steps.append(None)
-    return new_steps
-
 def astar_partitioned(
     maze: np.ndarray,
     start: Tuple[int, int, int],
@@ -96,8 +86,8 @@ def astar_partitioned(
             destiny = start_euclidean_distances[i][0]
             paths, borders = astar(maze[start[0]], start_2d, destiny, diagonal_level)
 
-            paths = add_floor_to_steps(paths, start[0])
-            borders = add_floor_to_steps(borders, start[0])
+            paths = [[(start[0], x, y) for x, y in step] if step is not None else None for step in paths] #adds floor back to coordinates
+            borders = [[(start[0], x, y) for x, y in step] if step is not None else None for step in borders]
 
             path_step += paths
             border_step += borders
@@ -120,8 +110,10 @@ def astar_partitioned(
         if i < len(end_euclidean_distances):
             destiny = end_euclidean_distances[i][0]
             paths, borders = astar(maze[end[0]], end_2d, destiny, diagonal_level)
-            paths = add_floor_to_steps(paths, end[0])
-            borders = add_floor_to_steps(borders, end[0])
+
+            paths = [[(end[0], x, y) for x, y in step] if step is not None else None for step in paths]
+            borders = [[(end[0], x, y) for x, y in step] if step is not None else None for step in borders]
+
             path_step += paths
             border_step += borders
             path = paths[-1]
