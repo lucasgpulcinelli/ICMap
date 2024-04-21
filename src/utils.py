@@ -1,7 +1,7 @@
 from itertools import product
 
 def euclidean_distance(n, p1, p2):
-    return sum([(p1[i] - p2[i])**2 for i in range(n)]) ** 0.5
+    return round(sum([(p1[i] - p2[i])**2 for i in range(n)]) ** 0.5, 3)
 
 # enumerator for diagonal level: full diagonals, n-1 diagonals, n-2 diagonals, etc.
 def generate_adjacent_squares(n, diagonal_level):
@@ -24,7 +24,7 @@ def generate_adjacent_squares(n, diagonal_level):
     center = tuple([0 for _ in range(n)])
     adjacent_coordinates = []
     for x in coordinates:
-        distance = round(euclidean_distance(n, x, center), 3)
+        distance = euclidean_distance(n, x, center)
         adjacent_coordinates.append((distance, x))
     return adjacent_coordinates
 

@@ -234,7 +234,7 @@ def astar(
             # Create the f, g, and h values
             child.g = current_node.g + cost 
             #we could do this without the sqrt, but this would make COST have almost no effect
-            child.h = round(utils.euclidean_distance(dimension, child.position, end_node.position), 2)
+            child.h = utils.euclidean_distance(dimension, child.position, end_node.position)
             child.f = child.g + child.h
 
             # Child is already in the open list
@@ -242,7 +242,8 @@ def astar(
                 idx = open_list.index(child) 
                 if child.g < open_list[idx].g:
                     # update the node in the open list
-                    open_list[idx] = child
+                    open_list.pop(idx)
+                    heapq.heappush(open_list, child)
             else:
                 heapq.heappush(open_list, child)
 
