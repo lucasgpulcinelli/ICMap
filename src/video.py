@@ -70,7 +70,7 @@ def generate_video(solution, scale=10):
         # color it
         imgs[f][x, y] = blue
 
-        # and draw the frame 6 times in order to slow the path creation
+        # and draw the frame a few times in order to slow the path creation
         frame = cv2.cvtColor(imgs[f], cv2.COLOR_RGBA2BGR)
         resized = cv2.resize(frame, videodims,
                              interpolation=cv2.INTER_NEAREST_EXACT)
