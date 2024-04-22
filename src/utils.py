@@ -7,7 +7,7 @@ def euclidean_distance(p1, p2):
     return round(sum([(p1_extended[i] - p2_extended[i])**2 for i in range(dim)]) ** 0.5, 3)
 
 def path_cost(path):
-    return sum([euclidean_distance(path[i], path[i+1]) for i in range(len(path)-1)])
+    return round(sum([euclidean_distance(path[i], path[i+1]) for i in range(len(path)-1)]), 2)
 
 # enumerator for diagonal level: full diagonals, n-1 diagonals, n-2 diagonals, etc.
 def generate_adjacent_squares(n, diagonal_level):

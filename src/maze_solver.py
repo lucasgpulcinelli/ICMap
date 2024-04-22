@@ -25,15 +25,8 @@ def solveBFS(
     print(paths_step[-1]) # prints [(0, 0, 0), (0, 1, 0), (0, 2, 0)]
     '''
 
-    #calculate execution time
-    start = time.time()
     #find path
     path_step, border_step = bfs.bfs(tensor, source, destination)
-    delta = time.time() - start
-
-    distance = utils.path_cost(path_step[-1]) if path_step[-1] is not None else None
-    print(f"BFS: Steps: {len(path_step)} | Execution time: {delta} | Path cost: {distance}")
-
 
     return path_step, border_step
 
@@ -58,11 +51,7 @@ def solveAStarEuclidean(
     '''
     maze = tensor.astype(int)
 
-    start = time.time()
     path_step, border_step = a_star.astar(maze, source, destination, 2)
-    delta = time.time() - start
-
-    print(f"A*: Steps: {len(path_step)} | Execution time: {delta} | Path cost: {utils.path_cost(path_step[-1])}")
 
     return path_step, border_step
 
@@ -87,11 +76,7 @@ def solveAStarPartitioned(
     '''
     maze = tensor.astype(int)
 
-    start = time.time()
     path_step, border_step = a_star.astar_partitioned(
         maze, source, destination, 2)
-    delta = time.time() - start
-
-    print(f"Partitioned A*: Steps: {len(path_step)} | Execution time: {delta} | Path cost: {utils.path_cost(path_step[-1])}")
 
     return path_step, border_step
