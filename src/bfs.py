@@ -3,7 +3,7 @@ import numpy as np
  
 def isValid(vis, floor, row, col):
     #Cell out of bounds
-    if (row < 0 or col < 0 or row >= 70 or col >= 102 or floor < 0 or floor >= 5):
+    if floor > (len(vis) - 1) or floor < 0 or row > (len(vis[len(vis)-1]) -1) or row < 0 or col > (len(vis[len(vis)-1][0]) -1) or col < 0:
         return False
     #Cell already visited
     if (vis[floor][row][col] == True):
@@ -51,7 +51,9 @@ def reconstructPath(parent, start, end):
     curr = end
     while curr != start:
         path.append(curr)
-        curr = parent[curr]
+        curr = parent.get(curr)
+        if curr is None:
+            return None
     path.append(start)
     path.reverse()
     return path
