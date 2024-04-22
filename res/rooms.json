@@ -5,9 +5,8 @@
   "3-002: Defesa e Concursos": [0, 46, 13],
 
   "3-003": [0, 47, 17],
-  "3-004A: Sala de Reunião": [0, 45, 9], // so achei o 3-004
-  "3-004B: ApoioACad": [0, 45, 9], // so achei o 3-004
-  // "3-004": [0, 45, 9],
+  "3-004A: Sala de Reunião": [0, 45, 9],
+  "3-004B: ApoioACad": [0, 45, 9],
   "3-005": [0, 41, 30],
   "3-006A: ATAD - Assistência Técnica Administrativa": [0, 60, 8],
   "3-006B: ATAD - Assistência Técnica Administrativa": [0, 60, 10],
@@ -102,11 +101,6 @@
   "3-161": [2, 44, 34],
   "3-162": [2, 46, 37],
   "3-163": [2, 44, 37],
-  // "3-164: LOt - Otimização":[2, ],
-  // "3-165: LAR - Aprendizado de Robôs, BioCom - Computação Bioinspirada, cDados - Centro de Ciência de Dados, Analitics - Análise de Volume Massivo de Dados": [2,],
-  // "3-166: STI - Seção Técnica de Informática": [2, ],
-  // "3-167: LRM - Robótica Móvel, LSEC - Sistemas Embarcados Críticos": [2, ],
-  // "3-168: Sala de Concursos": [2,],
 
   "3-229: Diego Raphael Amâncio (SCC)": [4, 58, 52],
   "3-230: Raimundo Nonato Araújo dos Santos (SMA)": [4, 58, 54],
@@ -163,14 +157,8 @@
   "4-109: Adriano Kamimura Suzuki (SME)": [2, 9, 18],
   "4-110: Desocupada": [2, 8, 20],
   "4-111: Auditório Luiz Antônio Favaro": [2, 14, 23],
-  // "4-112": [2,],
-  // "4-113": [2,],
-  // "4-114": [2,],
-  // "4-115": [2,],
   "4-116: Desocupada": [2, 15, 62],
-  // "4-117": [2,],
   "4-118: Vicente Garibay Cancho (SME)": [2, 12, 62],
-  // "4-119": [2,],
   "4-120: Sérgio Henrique Monari Soares (SMA)": [2, 10, 62],
   "4-121": [2, 6, 60],
   "4-122: Adenilso da Silva Simão (SSC)": [2, 7, 62],
@@ -201,7 +189,6 @@
   "4-204: Carlos H. Grossi Ferreira (SMA)": [4, 21, 9],
   "4-205: Maria Cristina Ferreira de Oliveira (SCC)": [4, 23, 7],
   "4-206: Ricardo M. Marcacini (SCC)": [4, 21, 7],
-  // "4-207": [2,],
   "4-208: Sandra Maria Aluísio (SCC)": [4, 12, 21],
   "4-209: Maria Luísa Bambozzi Oliveira (SME)": [4, 12, 18],
   "4-210: Guilherme da Silva (SMA)": [4, 9, 21],
@@ -239,6 +226,5 @@
   "4-240: Márcio de Castro (SME)": [4, 9, 64],
   "4-241: Impressora": [4,6, 63], 
   "4-242: Maristela Oliveira dos Santos (SME)": [4, 7, 64],
-  "4-243": [4, 22, 57],
-
+  "4-243": [4, 22, 57]
 }
