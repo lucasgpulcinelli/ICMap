@@ -1,8 +1,10 @@
+import time
 import numpy as np
 from typing import Tuple, List
 
 import a_star
 import bfs
+import utils
 
 
 def solveBFS(
@@ -23,9 +25,14 @@ def solveBFS(
     print(paths_step[-1]) # prints [(0, 0, 0), (0, 1, 0), (0, 2, 0)]
     '''
 
+    #calculate execution time
+    start = time.time()
+    #find path
     path_step, border_step = bfs.bfs(tensor, source, destination)
+    delta = time.time() - start
 
-    print(f"Steps for BFS: {len(path_step)}")
+    print(f"BFS: Steps: {len(path_step)} | Execution time: {delta} | Path cost: {utils.path_cost(path_step[-1])}")
+
 
     return path_step, border_step
 
@@ -50,9 +57,11 @@ def solveAStarEuclidean(
     '''
     maze = tensor.astype(int)
 
+    start = time.time()
     path_step, border_step = a_star.astar(maze, source, destination, 2)
-    
-    print(f"Steps for euclidean A*: {len(path_step)}")
+    delta = time.time() - start
+
+    print(f"A*: Steps: {len(path_step)} | Execution time: {delta} | Path cost: {utils.path_cost(path_step[-1])}")
 
     return path_step, border_step
 
@@ -76,42 +85,12 @@ def solveAStarPartitioned(
     print(paths_step[-1]) # prints [(0, 0, 0), (0, 1, 0), (0, 2, 0)]
     '''
     maze = tensor.astype(int)
+
+    start = time.time()
     path_step, border_step = a_star.astar_partitioned(
         maze, source, destination, 2)
-    
-    print(f"Steps for partitioned A*: {len(path_step)}")
+    delta = time.time() - start
+
+    print(f"Partitioned A*: Steps: {len(path_step)} | Execution time: {delta} | Path cost: {utils.path_cost(path_step[-1])}")
 
     return path_step, border_step
-
-def print_maze(
-    maze: np.ndarray,
-    source: Tuple[int, int, int] = None,
-    destination: Tuple[int, int, int] = None,
-    path: List[Tuple[int, int, int]] = None
-):
-    if path is not None:
-        for step in path:
-            maze[step[0]][step[1]][step[2]] = 2
-
-    if source is not None:
-        maze[source[0]][source[1]][source[2]] = 3
-
-    if destination is not None:
-        maze[destination[0]][destination[1]][destination[2]] = 4
-
-    for floor in maze:
-        print(f"New floor\n")
-        for row in floor:
-            line = []
-            for col in row:
-                if col == 1:
-                    line.append("\u2588")
-                elif col == 0:
-                    line.append(" ")
-                elif col == 2:
-                    line.append(".")
-                elif col == 3:
-                    line.append("S")
-                elif col == 4:
-                    line.append("E")
-            print("".join(line))
