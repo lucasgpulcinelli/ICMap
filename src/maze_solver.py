@@ -31,7 +31,8 @@ def solveBFS(
     path_step, border_step = bfs.bfs(tensor, source, destination)
     delta = time.time() - start
 
-    print(f"BFS: Steps: {len(path_step)} | Execution time: {delta} | Path cost: {utils.path_cost(path_step[-1])}")
+    distance = utils.path_cost(path_step[-1]) if path_step[-1] is not None else None
+    print(f"BFS: Steps: {len(path_step)} | Execution time: {delta} | Path cost: {distance}")
 
 
     return path_step, border_step

@@ -1,5 +1,6 @@
-from PySide2.QtWidgets import QComboBox, QHBoxLayout, QPushButton
+from PySide2.QtWidgets import QComboBox, QHBoxLayout, QPushButton, QLabel
 from PySide2.QtWidgets import QSizePolicy, QStackedLayout, QWidget, QVBoxLayout
+from PySide2.QtCore import Qt
 
 from ui.fromtosearch import FromToSearch
 from ui.pathshower import PathShower
@@ -23,11 +24,17 @@ class App(QWidget):
         self.rooms = rooms
 
         layout = QVBoxLayout()
+        message_layout = QHBoxLayout()
         self.stacked_layout = QStackedLayout()
         execute_layout = QHBoxLayout()
 
         # the search bars to the rooms
         self.search = FromToSearch(rooms)
+
+        self.message_label = QLabel("No path found!")
+        self.message_label.setAlignment(Qt.AlignCenter)
+        self.message_label.setStyleSheet("color: red")
+        self.message_label.hide()
 
         self.button = QPushButton("Gerar Caminho")
         self.button.clicked.connect(self.buttonToggle)
@@ -38,10 +45,12 @@ class App(QWidget):
         self.algorithms.addItem("Resolver Usando A* Euclidiano")
         self.algorithms.addItem("Resolver Usando A* Particionado")
 
+        message_layout.addWidget(self.message_label)
         self.stacked_layout.addWidget(self.search)
         execute_layout.addWidget(self.button)
         execute_layout.addWidget(self.algorithms)
 
+        layout.addLayout(message_layout)
         layout.addLayout(self.stacked_layout)
         layout.addLayout(execute_layout)
 
@@ -55,6 +64,7 @@ class App(QWidget):
         '''
 
         # if we are in the path view area, switch back to room selection
+        self.message_label.hide()
         if self.stacked_layout.currentIndex() != 0:
             self.stacked_layout.setCurrentIndex(0)
             self.button.setText("Gerar Caminho")
@@ -65,6 +75,7 @@ class App(QWidget):
 
         solution = self.genPath()
         if solution[0][-1] is None:
+            self.message_label.show()
             return
 
         self.button.setText("Fazer um Novo Trajeto")
