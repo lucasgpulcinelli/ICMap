@@ -1,4 +1,3 @@
-import random
 from typing import List, Tuple
 from warnings import warn
 import heapq
@@ -74,89 +73,73 @@ def astar_partitioned(
     if start[0] == end[0]:
         return astar(maze, start, end, diagonal_level)
     
-    f = open("res/stairs.json")
-    stairs = json.load(f)
-    f.close()
+    def stairs_in_floor(floor):
+        with open("res/stairs.json") as f:
+            stairs = json.load(f)
+            #remove floor from coordinates
+            return [(x, y) for f, x, y in stairs if f == floor]
 
-    start_euclidean_distances = []
-    end_euclidean_distances = []
+    def distance_from_point_to_points(point, points):
+        dist = [(p, utils.euclidean_distance(point, p)) for p in points]
+        dist.sort(key=lambda x: x[1])
+        return dist
 
-    start_2d = (start[1], start[2])
-    end_2d = (end[1], end[2])
+    def add_floor_to_coordinates(floor, coordinates):
+        return [[(floor, x, y) for x, y in step] if step is not None else None for step in coordinates]
 
-    for f, x, y in stairs:
-        if f == start[0]:
-            distance = np.sqrt((x - start[1]) ** 2 + (y - start[2]) ** 2)
-            coordinates = (x, y)
-            start_euclidean_distances.append((coordinates, distance))
-        elif f == end[0]:
-            distance = np.sqrt((x - end[1]) ** 2 + (y - end[2]) ** 2)
-            coordinates = (x, y)
-            end_euclidean_distances.append((coordinates, distance))
+    def astar_2d(start, destiny):
+        paths, borders = astar(maze[start[0]], (start[1], start[2]), destiny, diagonal_level)
 
-    start_euclidean_distances.sort(key=lambda x: x[1])
-    end_euclidean_distances.sort(key=lambda x: x[1])
-
-    paths_in_start_floor = []
-    paths_in_end_floor = []
-
-    path_step = []
-    border_step = []
-
-    i = 0
-    stop = 2
-    while 1:
-        if i < len(start_euclidean_distances):
-            destiny = start_euclidean_distances[i][0]
-            paths, borders = astar(maze[start[0]], start_2d, destiny, diagonal_level)
-
-            paths = [[(start[0], x, y) for x, y in step] if step is not None else None for step in paths] #adds floor back to coordinates
-            borders = [[(start[0], x, y) for x, y in step] if step is not None else None for step in borders]
-
-            path_step += paths
-            border_step += borders
-            path = paths[-1]
-            if path is not None:
-                end_calculated_destinations = [x[0] for x in paths_in_end_floor]
-                if destiny in end_calculated_destinations:
-                    end_path = paths_in_end_floor[end_calculated_destinations.index(destiny)][1]
-                    end_path.reverse()
-                    path_step.append(path + end_path)
-                    border_step.append(None)
-                    return path_step, border_step
-
-                paths_in_start_floor.append((destiny, path))
+        paths = add_floor_to_coordinates(start[0], paths)
+        borders = add_floor_to_coordinates(start[0], borders)    
+        return paths, borders
+    
+    def process_stair(current_stair, paths_from_this_end, paths_from_other_end, is_reversed):
+        paths, borders = astar_2d(start if not is_reversed else end, current_stair)
+        path_step.extend(paths)
+        border_step.extend(borders)
+        last_path = paths[-1]
+        
+        if last_path is None:
+            return False
+        paths_from_this_end[current_stair] = last_path
+        
+        matching_path = paths_from_other_end.get(current_stair)
+        if matching_path is None:
+            return False
+        
+        combined_path = []
+        if is_reversed:
+            last_path.reverse()
+            combined_path = matching_path + last_path
         else:
-            stop -= 1
-            if stop == 0:
-                break
+            matching_path.reverse()
+            combined_path = last_path + matching_path
+        path_step.append(combined_path)
+        border_step.append(None)
+        return True
 
-        if i < len(end_euclidean_distances):
-            destiny = end_euclidean_distances[i][0]
-            paths, borders = astar(maze[end[0]], end_2d, destiny, diagonal_level)
+    start_to_stairs = distance_from_point_to_points(start, stairs_in_floor(start[0]))
+    end_to_stairs = distance_from_point_to_points(end, stairs_in_floor(end[0]))
 
-            paths = [[(end[0], x, y) for x, y in step] if step is not None else None for step in paths]
-            borders = [[(end[0], x, y) for x, y in step] if step is not None else None for step in borders]
+    stairs_in_start_floor = len(start_to_stairs)
+    stairs_in_end_floor = len(end_to_stairs)
 
-            path_step += paths
-            border_step += borders
-            path = paths[-1]
-            if path is not None:
-                start_calculated_destinations = [x[0] for x in paths_in_start_floor]
-                if destiny in start_calculated_destinations:
-                    start_path = paths_in_start_floor[start_calculated_destinations.index(destiny)][1]
-                    path.reverse()
-                    path_step.append(start_path + path)
-                    border_step.append(None)
-                    return path_step, border_step
-                paths_in_end_floor.append((destiny, path))
-        else:
-            stop -= 1
-            if stop == 0:
-                break
+    path_step, border_step = [], []
 
+    paths_from_start = {}
+    paths_from_end = {}
+    i = 0 
+    while i < stairs_in_start_floor or i < stairs_in_end_floor:
+        if i < stairs_in_start_floor and process_stair(start_to_stairs[i][0], paths_from_start, paths_from_end, False):
+            return path_step, border_step
+        if i < stairs_in_end_floor and process_stair(end_to_stairs[i][0], paths_from_end, paths_from_start, True):
+            return path_step, border_step
         i += 1
-    return None
+
+    path_step.append(None)
+    border_step.append(None)
+    return path_step, border_step
 
 def astar(
     maze: np.ndarray,
@@ -173,13 +156,10 @@ def astar(
     :return path, visited, border:
     """
     dimension = len(maze.shape)
-    if diagonal_level < 1 or diagonal_level > dimension:
-        raise ValueError("Diagonal level cannot be less than 1 or greater than the number of dimensions")
+    diagonal_level = max(1, min(dimension, diagonal_level))
     
     if len(start) != dimension or len(end) != dimension:
-        raise ValueError("Start and end must have the same number of dimensions as the maze")
-
-    #list of lists with the path at each step
+        raise ValueError("Start and end must have the same dimension as the maze")
 
     # Create start and end node
     start_node = Node(None, start)
@@ -236,7 +216,8 @@ def astar(
 
             child = new_node #the new node is a valid child of the current_node
             #calculate the heuristic
-            child.g = current_node.g + utils.euclidean_distance(dimension, current_node.position, child.position)
+            
+            child.g = current_node.g + child.euclidean_distance(current_node)
             child.h = child.euclidean_distance(end_node)
             child.f = child.g + child.h
 

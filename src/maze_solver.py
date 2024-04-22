@@ -77,7 +77,7 @@ def solveAStarPartitioned(
     '''
     maze = tensor.astype(int)
     path_step, border_step = a_star.astar_partitioned(
-        maze, source, destination, True)
+        maze, source, destination, 2)
     
     print(f"Steps for partitioned A*: {len(path_step)}")
 

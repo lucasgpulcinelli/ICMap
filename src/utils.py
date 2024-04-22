@@ -1,7 +1,10 @@
 from itertools import product
 
-def euclidean_distance(n, p1, p2):
-    return round(sum([(p1[i] - p2[i])**2 for i in range(n)]) ** 0.5, 3)
+def euclidean_distance(p1, p2):
+    dim = max(len(p1), len(p2))
+    p1_extended = [0] * (dim - len(p1)) + list(p1)
+    p2_extended = [0] * (dim - len(p2)) + list(p2)
+    return round(sum([(p1_extended[i] - p2_extended[i])**2 for i in range(dim)]) ** 0.5, 3)
 
 # enumerator for diagonal level: full diagonals, n-1 diagonals, n-2 diagonals, etc.
 def generate_adjacent_squares(n, diagonal_level):
